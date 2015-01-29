@@ -7,7 +7,7 @@ var stripUTF8ByteOrder = require('./strip-utf8-byte-order')
 var stringImportMatcher = /@import ["'](.+)["'];/g
 var importMatcher = /@import +(url\()?([^()]+)\)? *;/g
 var urlMatcher = /url\(["']?([^"'()]+)["']?\)/g
-var absoluteUrl = /^([a-zA-Z]:\/)?\//
+var absoluteUrl = /^([a-z][a-z-+.0-9]*:\/)?\//i
 var dataUrl = /^data:/
 
 function parse(file, absRoot, transform) {

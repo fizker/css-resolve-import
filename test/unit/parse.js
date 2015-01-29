@@ -55,7 +55,18 @@ describe('unit/parse.js', function() {
 			var result = parse('/a/b', '/a')
 			expect(result).to.equal('a{background:url(/absolute/path);}')
 		})
+		it('should not change urls starting with a url scheme', function() {
+			fs.readFileSync.withArgs('/a/b').returns('a{background:url(scheme.-+1://absolute/path);}')
+			var result = parse('/a/b', '/a')
+			expect(result).to.equal('a{background:url(scheme.-+1://absolute/path);}')
+		})
+		it('should not change urls starting with `//`', function() {
+			fs.readFileSync.withArgs('/a/b').returns('a{background:url(//absolute/path);}')
+			var result = parse('/a/b', '/a')
+			expect(result).to.equal('a{background:url(//absolute/path);}')
+		})
 	})
+
 	describe('When parsing an import', function() {
 		it('should take the current path into consideration', function() {
 			fs.readFileSync.withArgs('a/b').returns('@import url(c);')
@@ -73,7 +84,20 @@ describe('unit/parse.js', function() {
 			var result = parse('a')
 			expect(result).to.equal('a{background:url(b/d);')
 		})
+		it('should not replace urls starting with a scheme', function() {
+			fs.readFileSync.withArgs('a')
+				.returns('@import url(scheme.-+1://example.com/css)')
+			var result = parse('a')
+			expect(result).to.equal('@import url(scheme.-+1://example.com/css)')
+		})
+		it('should not replace urls starting with `//`', function() {
+			fs.readFileSync.withArgs('a')
+				.returns('@import url(//example.com/css)')
+			var result = parse('a')
+			expect(result).to.equal('@import url(//example.com/css)')
+		})
 	})
+
 	describe('When parsing a file with different imports', function() {
 		var result
 		it('should work with urls containing white-space', function() {
@@ -107,6 +131,7 @@ describe('unit/parse.js', function() {
 			expect(result).to.equal('read file')
 		})
 	})
+
 	describe('When calling parse() with a css file with no imports', function() {
 		var result
 		beforeEach(function() {
