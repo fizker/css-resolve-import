@@ -4,10 +4,11 @@ var fs = require('fs')
 var path = require('path')
 var format = require('util').format
 var stripUTF8ByteOrder = require('./strip-utf8-byte-order')
-var stringImportMatcher = /@import ["'](.+)["'];/g
-var importMatcher = /@import +(url\()?([^()]+)\)? *;/g
+var stringImportMatcher = /@import ["'](.+)["'];?/g
+var importMatcher = /@import +(?:url\()?([^()]+)\)?(:? *;)?/g
 var urlMatcher = /url\(["']?([^"'()]+)["']?\)/g
-var absoluteUrl = /^([a-z][a-z-+.0-9]*:\/)?\//i
+var urlWithScheme = /^(?:[a-z][a-z-+.0-9]*:)?\/\//i
+var absoluteUrl = /^\//i
 var dataUrl = /^data:/
 
 function parse(file, absRoot, transform) {
@@ -23,12 +24,16 @@ function parse(file, absRoot, transform) {
 		})
 		.replace(urlMatcher, function(match, url) {
 			url = url.trim()
-			if(!url.match(dataUrl) && !url.match(absoluteUrl)) {
+			if(!url.match(dataUrl) && !url.match(urlWithScheme) && !url.match(absoluteUrl)) {
 				url = path.join(relRoot, url).replace(/\\/g, '/')
 			}
 			return format('url(%s)', url)
 		})
-		.replace(importMatcher, function(match, junk, file) {
+		.replace(importMatcher, function(match, file) {
+			if(file.match(urlWithScheme)) {
+				return format('@import url(%s);', file)
+			}
+
 			if(!file.match(absoluteUrl)) {
 				file = path.join(absRoot, file)
 			}

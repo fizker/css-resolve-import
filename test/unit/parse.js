@@ -88,13 +88,13 @@ describe('unit/parse.js', function() {
 			fs.readFileSync.withArgs('a')
 				.returns('@import url(scheme.-+1://example.com/css)')
 			var result = parse('a')
-			expect(result).to.equal('@import url(scheme.-+1://example.com/css)')
+			expect(result).to.equal('@import url(scheme.-+1://example.com/css);')
 		})
 		it('should not replace urls starting with `//`', function() {
 			fs.readFileSync.withArgs('a')
 				.returns('@import url(//example.com/css)')
 			var result = parse('a')
-			expect(result).to.equal('@import url(//example.com/css)')
+			expect(result).to.equal('@import url(//example.com/css);')
 		})
 	})
 
@@ -115,8 +115,18 @@ describe('unit/parse.js', function() {
 			result = parse('a.css')
 			expect(result).to.equal('read file')
 		})
+		it('should work with strings without semicolon', function() {
+			fs.readFileSync.withArgs('a.css').returns('@import "file"')
+			result = parse('a.css')
+			expect(result).to.equal('read file')
+		})
 		it('should work with urls without quotes', function() {
 			fs.readFileSync.withArgs('a.css').returns('@import url(file);')
+			result = parse('a.css')
+			expect(result).to.equal('read file')
+		})
+		it('should work with urls without semicolon', function() {
+			fs.readFileSync.withArgs('a.css').returns('@import url(file)')
 			result = parse('a.css')
 			expect(result).to.equal('read file')
 		})
