@@ -104,10 +104,15 @@ describe('unit/parse.js', function() {
 			{ name: 'strings with single quotes', importStatement: "'file';" },
 			{ name: 'strings with double quotes', importStatement: '"file";' },
 			{ name: 'strings without semicolon', importStatement: '"file"' },
+			{ name: 'strings with question marks and single quotes', importStatement: "'file?some-tag';" },
+			{ name: 'strings with question marks and double quotes', importStatement: '"file?some-tag";' },
 			{ name: 'urls without quotes', importStatement: 'url(file);' },
 			{ name: 'urls without semicolon', importStatement: 'url(file)' },
 			{ name: 'urls with single quotes', importStatement: "url('file');" },
 			{ name: 'urls with double quotes', importStatement: 'url("file");' },
+			{ name: 'urls with question marks', importStatement: 'url(file?some-tag);' },
+			{ name: 'urls with question marks and single quotes', importStatement: "url('file?some-tag');" },
+			{ name: 'urls with question marks and double quotes', importStatement: 'url("file?some-tag");' },
 		].forEach(function(test) {
 			it('should work with ' + test.name, function() {
 				fs.readFileSync.withArgs('a.css').returns('@import ' + test.importStatement)
