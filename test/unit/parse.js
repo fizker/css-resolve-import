@@ -99,46 +99,21 @@ describe('unit/parse.js', function() {
 	})
 
 	describe('When parsing a file with different imports', function() {
-		var result
-		it('should work with urls containing white-space', function() {
-			fs.readFileSync.withArgs('a.css').returns('@import  url(  file  )  ;')
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with strings with single quotes', function() {
-			fs.readFileSync.withArgs('a.css').returns("@import 'file';")
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with strings with double quotes', function() {
-			fs.readFileSync.withArgs('a.css').returns('@import "file";')
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with strings without semicolon', function() {
-			fs.readFileSync.withArgs('a.css').returns('@import "file"')
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with urls without quotes', function() {
-			fs.readFileSync.withArgs('a.css').returns('@import url(file);')
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with urls without semicolon', function() {
-			fs.readFileSync.withArgs('a.css').returns('@import url(file)')
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with urls with single quotes', function() {
-			fs.readFileSync.withArgs('a.css').returns("@import url('file');")
-			result = parse('a.css')
-			expect(result).to.equal('read file')
-		})
-		it('should work with urls with double quotes', function() {
-			fs.readFileSync.withArgs('a.css').returns('@import url("file");')
-			result = parse('a.css')
-			expect(result).to.equal('read file')
+		[
+			{ name: 'urls containing white-space', importStatement: ' url(  file  )  ;' },
+			{ name: 'strings with single quotes', importStatement: "'file';" },
+			{ name: 'strings with double quotes', importStatement: '"file";' },
+			{ name: 'strings without semicolon', importStatement: '"file"' },
+			{ name: 'urls without quotes', importStatement: 'url(file);' },
+			{ name: 'urls without semicolon', importStatement: 'url(file)' },
+			{ name: 'urls with single quotes', importStatement: "url('file');" },
+			{ name: 'urls with double quotes', importStatement: 'url("file");' },
+		].forEach(function(test) {
+			it('should work with ' + test.name, function() {
+				fs.readFileSync.withArgs('a.css').returns('@import ' + test.importStatement)
+				var result = parse('a.css')
+				expect(result).to.equal('read file')
+			})
 		})
 	})
 
