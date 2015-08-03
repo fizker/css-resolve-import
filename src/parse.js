@@ -6,7 +6,8 @@ var format = require('util').format
 var stripUTF8ByteOrder = require('./strip-utf8-byte-order')
 var stringImportMatcher = /@import ["'](.+)["'];?/g
 var importMatcher = /@import +(?:url\()?([^()]+)\)?(:? *;)?/g
-var urlMatcher = /url\(["']?([^"'()]+?)(?:\?.*?)?["']?\)/g
+var urlMatcher = /url\(["']?((?:[^"'()]+?)(?:\?.*?)?)["']?\)/g
+var queryParamsMatcher = /(\?.*)$/i
 var urlWithScheme = /^(?:[a-z][a-z-+.0-9]*:)?\/\//i
 var absoluteUrl = /^\//i
 var dataUrl = /^data:/
@@ -25,6 +26,7 @@ function parse(file, absRoot, transform) {
 		.replace(urlMatcher, function(match, url) {
 			url = url.trim()
 			if(!url.match(dataUrl) && !url.match(urlWithScheme) && !url.match(absoluteUrl)) {
+				url = url.replace(queryParamsMatcher, '')
 				url = path.join(relRoot, url).replace(/\\/g, '/')
 			}
 			return format('url(%s)', url)

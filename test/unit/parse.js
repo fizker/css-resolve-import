@@ -96,6 +96,24 @@ describe('unit/parse.js', function() {
 			var result = parse('a')
 			expect(result).to.equal('@import url(//example.com/css);')
 		})
+		it('should leave query-params for urls starting with a scheme', function() {
+			fs.readFileSync.withArgs('a')
+				.returns('@import url(scheme.-+1://example.com/css?query=param&second-param);')
+			var result = parse('a')
+			expect(result).to.equal('@import url(scheme.-+1://example.com/css?query=param&second-param);')
+		})
+		it('should leave query-params for urls starting with //', function() {
+			fs.readFileSync.withArgs('a')
+				.returns('@import url(//example.com/css?query=param&second-param);')
+			var result = parse('a')
+			expect(result).to.equal('@import url(//example.com/css?query=param&second-param);')
+		})
+		it('should function with a google-font url', function() {
+			fs.readFileSync.withArgs('a')
+				.returns('@import url("http://fonts.googleapis.com/css?family=Fira+Sans:300,700,300italic,700italic|Courgette");')
+			var result = parse('a')
+			expect(result).to.equal('@import url(http://fonts.googleapis.com/css?family=Fira+Sans:300,700,300italic,700italic|Courgette);')
+		})
 	})
 
 	describe('When parsing a file with different imports', function() {
