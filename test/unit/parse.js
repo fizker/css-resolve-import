@@ -65,6 +65,11 @@ describe('unit/parse.js', function() {
 			var result = parse('/a/b', '/a')
 			expect(result).to.equal('a{background:url(//absolute/path);}')
 		})
+		it('should not remove query-params', function() {
+			fs.readFileSync.withArgs('/a/b').returns('a{background:url(file?query);}')
+			var result = parse('/a/b', '/a')
+			expect(result).to.equal('a{background:url(file?query);}')
+		})
 	})
 
 	describe('When parsing an import', function() {
@@ -107,6 +112,11 @@ describe('unit/parse.js', function() {
 				.returns('@import url(//example.com/css?query=param&second-param);')
 			var result = parse('a')
 			expect(result).to.equal('@import url(//example.com/css?query=param&second-param);')
+		})
+		it('should remove query-params for urls on the local disk', function() {
+			fs.readFileSync.withArgs('a/b').returns('@import url(c?query);')
+			parse('a/b')
+			expect(fs.readFileSync).to.have.been.calledWith(path.join('a/c'))
 		})
 		it('should function with a google-font url', function() {
 			fs.readFileSync.withArgs('a')

@@ -26,7 +26,6 @@ function parse(file, absRoot, transform) {
 		.replace(urlMatcher, function(match, url) {
 			url = url.trim()
 			if(!url.match(dataUrl) && !url.match(urlWithScheme) && !url.match(absoluteUrl)) {
-				url = url.replace(queryParamsMatcher, '')
 				url = path.join(relRoot, url).replace(/\\/g, '/')
 			}
 			return format('url(%s)', url)
@@ -37,6 +36,7 @@ function parse(file, absRoot, transform) {
 			}
 
 			if(!file.match(absoluteUrl)) {
+				file = file.replace(queryParamsMatcher, '')
 				file = path.join(absRoot, file)
 			}
 			var parsedFile = parse(file, absRoot, transform)
