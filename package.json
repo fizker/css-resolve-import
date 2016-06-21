@@ -1,6 +1,6 @@
 {
   "name": "css-resolve-import",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Resolves @import statements in CSS",
   "main": "index.js",
   "scripts": {
